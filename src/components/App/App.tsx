@@ -2,6 +2,9 @@ import Section from "../Section/Section";
 import Container from "../Container/Container";
 import { getPhotos } from "../../services/photos";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import { Photo } from "../../types/photo";
+import Form from "../Form/Form";
 
 const handleSearch = async (query: string) =>{
   try{
@@ -15,13 +18,16 @@ const handleSearch = async (query: string) =>{
 }
 
 export default function App() {
+  const[photos, setPhotos] = useState<Photo[]>([])
   return (
     <>
       <Section>
         <Container>
           <Form onSubmit={handleSearch}/>
-          {/* Компоненти застосунку */}</Container>
-        Home page
+
+          
+
+        </Container>
       </Section>
     </>
   );
