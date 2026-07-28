@@ -3,7 +3,12 @@ import type { Post } from "../types/post";
 
 axios.defaults.baseURL = "https://jsonplaceholder.typicode.com";
 
-export const fetchPosts = async (searchText: string, page: number): Promise<Post[]> => {
+interface FetchPostsResponse{
+    posts: Post[],
+    totalCount: number
+}
+
+export const fetchPosts = async (searchText: string, page: number): Promise<FetchPostsResponse> => {
     const res = await axios.get<Post[]>("/posts", 
         {
             params:{
@@ -13,7 +18,12 @@ export const fetchPosts = async (searchText: string, page: number): Promise<Post
             }
         }
     )
-    return res.data;
+
+    const totalCount = Number(res.headers["x-total-count"])
+    return {
+        posts: res.data,
+        totalCount
+    };
 };
 
 export const createPost = async (newPost) => {};
