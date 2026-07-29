@@ -1,11 +1,45 @@
 import * as Yup from "yup";
-import { Field, Form, Formik, FormikHelpers, ErrorMessage } from "formik";
-
+import { Field, Form, Formik, ErrorMessage } from "formik";
 import css from "./CreatePostForm.module.css";
+import type { newPost } from "../../types/post";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createPost } from "../../services/postService";
 
-export default function PostForm() {
+
+interface PostFormProps{
+  onClose: ()=> void;
+
+}
+
+const initialValues: newPost={
+  title: "",
+  body:"",
+};
+
+const postSchema = Yup.object().shape({
+  title: Yup.string().min(3, "At least 3 characters").max(50, "Maximum length is 50 characters").required("Title is required"),
+  body: Yup.string().max(500, "Maximum length is 500 characters").required("Post text is required"),
+})
+
+
+export default function PostForm({onClose}: PostFormProps) {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: createPost,
+    onSuccess: ()=>{
+      alert("Posted successfully!");
+      queryClient.invalidateQueries({queryKey: ["posts"]})
+      onClose();
+    },
+
+  })
+
+  const handleSubmit = (values: newPost) =>{
+    mutation.mutate(values)
+  }
+
   return (
-    <Formik initialValues={} onSubmit={} validationSchema={}>
+    <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={postSchema}>
       <Form className={css.form}>
         <div className={css.formGroup}>
           <label htmlFor="title">Title</label>
@@ -20,10 +54,10 @@ export default function PostForm() {
         </div>
 
         <div className={css.actions}>
-          <button type="button" className={css.cancelButton}>
+          <button type="button" className={css.cancelButton} onClick={onClose}>
             Cancel
           </button>
-          <button type="submit" className={css.submitButton} disabled={}>
+          <button type="submit" className={css.submitButton} disabled={mutation.isPending}>
             Create post
           </button>
         </div>

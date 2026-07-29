@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Post } from "../types/post";
+import type { newPost, Post } from "../types/post";
 
 axios.defaults.baseURL = "https://jsonplaceholder.typicode.com";
 
@@ -26,8 +26,17 @@ export const fetchPosts = async (searchText: string, page: number): Promise<Fetc
     };
 };
 
-export const createPost = async (newPost) => {};
+export const createPost = async (newPost: newPost): Promise<Post> => {
+    const res = await axios.post<Post>("/posts", newPost)
+    return res.data
+};
 
-export const editPost = async (newDataPost) => {};
+export const editPost = async (newDataPost: Post): Promise<Post> => {
+    const res = await axios.patch<Post>(`/posts/${newDataPost.id}`, newDataPost);
+    return res.data;
+};
 
-export const deletePost = async (postId) => {};
+export const deletePost = async (postId: number): Promise<Post> => {
+    const res = await axios.delete<Post>(`/posts/${postId}`);
+    return res.data;
+};
